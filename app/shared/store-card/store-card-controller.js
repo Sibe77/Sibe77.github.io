@@ -1,0 +1,1 @@
+angular.module("app").directive("storeCard",function(){return{templateUrl:"app/shared/store-card/store-card-view.html",controller:"storeCardController"}}).controller("storeCardController",["$scope",function(r){r.doSearch=function(o){o=o.replace(/^[ ]+|[ ]+$/g,""),r.search(o)},r.showProducts=[],r.toggleProductsDisplay=function(o){r.showProducts[o]=!r.showProducts[o]}}]);
