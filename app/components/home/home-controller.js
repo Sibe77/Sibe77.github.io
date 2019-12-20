@@ -1,1 +1,4 @@
-angular.module("app").controller("homeController",["$scope",function(o){}]);
+angular.module('app')
+.controller('homeController',['$scope', function($scope) {
+	//
+}]);

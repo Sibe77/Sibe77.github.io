@@ -1,1 +1,169 @@
-angular.module("app").factory("closedSignService",[function(){var r,e=new Date,o=e.getHours(),u=e.getMinutes(),n=function(){return["Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado"][(new Date).getDay()]},i=function(r,e,n,i){var t=function(){if(o===r){if(u>=e)return!0}else{if(o!==n)return!0;if(u<i)return!0}};if(null!=r&&null!=n){if(n===r)return!0;if(n<r){if((o>=r||o<=n)&&t())return!0}else if(o>=r&&o<=n&&t())return!0}return!1},t=function(r,e,o){if(void 0==e)return r;var u,n,i,t;return r&&(open1hour=Number(r.split(":")[0])),e&&(open2hour=Number(e.split(":")[0])),open1hour>open2hour?(i=open1hour,u=r,t=open2hour,n=e):(i=open2hour,u=e,t=open1hour,n=r),o<t?n:o<i?u:o>i?n:o>t?u:void 0},s=function(r,e,o){if(void 0==e)return r;var u,n,i,t;return r&&(open1hour=Number(r.split(":")[0])),e&&(open2hour=Number(e.split(":")[0])),open1hour>open2hour?(i=open1hour,u=r,t=open2hour,n=e):(i=open2hour,u=e,t=open1hour,n=r),o<t?n:o<i?u:o>i?n:void 0},l={};return l.getData=function(e){for(var u in e.hours)if(n()===e.hours[u].dia){var l=!1;if(void 0!=e.hours[u].abre&&void 0!=e.hours[u].cierra){var p=Number(e.hours[u].abre.split(":")[0]),a=Number(e.hours[u].abre.split(":")[1]),h=Number(e.hours[u].cierra.split(":")[0]),v=Number(e.hours[u].cierra.split(":")[1]);l=i(p,a,h,v)}void 0!=e.hours[u].vuelveabrir&&void 0!=e.hours[u].vuelvecerrar&&(p=Number(e.hours[u].vuelveabrir.split(":")[0]),a=Number(e.hours[u].vuelveabrir.split(":")[1]),h=Number(e.hours[u].vuelvecerrar.split(":")[0]),v=Number(e.hours[u].vuelvecerrar.split(":")[1]),l||(l=i(p,a,h,v))),r=t(e.hours[u].abre,e.hours[u].vuelveabrir,o),nextOpenHour=r?r.split(":")[0]:0,nextCloseTime=s(e.hours[u].cierra,e.hours[u].vuelvecerrar,o),nextCloseHour=nextCloseTime?nextCloseTime.split(":")[0]:0}return{isOpen:l,openTime:r,openHour:nextOpenHour,closeTime:nextCloseTime,closeHour:nextCloseHour}},l}]);
+angular.module('app')
+.factory("closedSignService",[function(){
+	var open = false;
+
+    var date = new Date();
+    var currentHour = date.getHours();
+    var currentMinutes = date.getMinutes();
+
+    var nextOpenTime;
+
+
+	var dayOfWeek = function(){
+		//Returns the day of week writen in spanish. ie:"Lunes"
+		var dayNumber = new Date().getDay();
+		var days = ["Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado"];
+		return days[dayNumber];
+	};
+
+    var checkTimeRange = function (startHour, startMinutes, endHour, endMinutes) {
+	  var checkForMinutes = function() {
+	    if (currentHour === startHour) {
+	      if (currentMinutes >= startMinutes) {
+	        return true;
+	      }
+	    } else if (currentHour === endHour) {
+	      if (currentMinutes < endMinutes) {
+	        return true;
+	      }
+	    } else {
+	      return true;
+	    }
+	  }
+
+	  if (startHour != null && endHour != null) { 
+	    if (endHour === startHour) {
+	      return true;
+	    } else if (endHour < startHour) {
+	      if (currentHour >= startHour || currentHour <= endHour)
+	      {
+	        if(checkForMinutes()) {
+	          return true;
+	        }
+	      }
+	    } else { // startHour < endHour
+	      if (currentHour >= startHour && currentHour <= endHour) {
+	        if(checkForMinutes()) {
+	          return true;
+	        }
+	      }
+	    }
+	  }
+
+	  return false;
+	};
+
+	var getNextOpenTime = function (open1, open2, currTime) {
+		if (open2 == undefined) {
+		return open1;
+		} else {
+			var biggestTime;
+			var smallestTime;
+			var biggestHour;
+			var smallestHour;
+
+			if (open1)
+				open1hour = Number(open1.split(":")[0]);
+			if (open2)
+				open2hour = Number(open2.split(":")[0]);
+
+			if (open1hour > open2hour) {
+			  biggestHour = open1hour;
+			  biggestTime = open1;
+			  smallestHour = open2hour;
+			  smallestTime = open2;
+			} else {
+			  biggestHour = open2hour;
+			  biggestTime = open2;
+			  smallestHour = open1hour;
+			  smallestTime = open1;
+			}
+
+			if (currTime < smallestHour)
+			  return smallestTime;
+			if (currTime < biggestHour)
+			  return biggestTime;
+			if (currTime > biggestHour)
+			  return smallestTime;
+			if (currTime > smallestHour)
+			  return biggestTime;
+		}
+	};
+
+	var getNextCloseTime = function (open1, open2, currTime) {
+		if (open2 == undefined) {
+			return open1;
+		} else {
+			var biggestTime;
+			var smallestTime;
+			var biggestHour;
+			var smallestHour;
+
+			if (open1)
+				open1hour = Number(open1.split(":")[0]);
+			if (open2)
+				open2hour = Number(open2.split(":")[0]);
+
+			if (open1hour > open2hour) {
+			  biggestHour = open1hour;
+			  biggestTime = open1;
+			  smallestHour = open2hour;
+			  smallestTime = open2;
+			} else {
+			  biggestHour = open2hour;
+			  biggestTime = open2;
+			  smallestHour = open1hour;
+			  smallestTime = open1;
+			}
+
+			if (currTime < smallestHour) {
+			  return smallestTime;
+			}
+			else if (currTime < biggestHour) {
+			  return biggestTime;
+			}
+			else if (currTime > biggestHour) {
+			  return smallestTime;
+			}
+		}
+	};
+
+	var service = {};
+	service.getData = function (cliente) {
+		// Returns an object with information about it's open/closed times
+		// return {isOpen: boolean, openTime: string | null, openHour: string | null};
+
+	    for (var horario in cliente.hours) {
+	      if (dayOfWeek() === cliente.hours[horario].dia) {
+	      	var open = false;
+	        if (cliente.hours[horario].abre != undefined && cliente.hours[horario].cierra != undefined) {
+	          var openHour = Number(cliente.hours[horario].abre.split(":")[0]);
+	          var openMinutes = Number(cliente.hours[horario].abre.split(":")[1]);
+	          var closeHour = Number(cliente.hours[horario].cierra.split(":")[0]);
+	          var closeMinutes = Number(cliente.hours[horario].cierra.split(":")[1]);
+
+	          open = checkTimeRange(openHour, openMinutes, closeHour, closeMinutes);
+	        }
+
+	        if(cliente.hours[horario].vuelveabrir != undefined && cliente.hours[horario].vuelvecerrar != undefined) {
+	          openHour = Number(cliente.hours[horario].vuelveabrir.split(":")[0]);
+	          openMinutes = Number(cliente.hours[horario].vuelveabrir.split(":")[1]);
+	          closeHour = Number(cliente.hours[horario].vuelvecerrar.split(":")[0]);
+	          closeMinutes = Number(cliente.hours[horario].vuelvecerrar.split(":")[1]);
+	          if (!open) { // If first openHours returned false for open
+	            open = checkTimeRange(openHour, openMinutes, closeHour, closeMinutes);
+	          }
+	        }
+
+	        nextOpenTime = getNextOpenTime(cliente.hours[horario].abre, cliente.hours[horario].vuelveabrir, currentHour);
+	        nextOpenHour = nextOpenTime ? nextOpenTime.split(":")[0] : 0;
+
+	        nextCloseTime = getNextCloseTime(cliente.hours[horario].cierra, cliente.hours[horario].vuelvecerrar, currentHour);
+	        nextCloseHour = nextCloseTime ? nextCloseTime.split(":")[0] : 0;
+	      }
+	    }
+
+	    return {isOpen: open, openTime: nextOpenTime, openHour: nextOpenHour, closeTime: nextCloseTime, closeHour: nextCloseHour};
+  	}
+  	return service;
+}]);

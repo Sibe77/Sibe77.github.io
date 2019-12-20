@@ -1,1 +1,5 @@
-<div id=noResultsScreen class=textAndLogo><h2 class=noResultsHeader>No se encontraron productos que coincidan con "<span class=noResultsTerm ng-bind=searchText></span>", probá de nuevo con otras palabras o <a class="noResultsTerm link" ng-click=locationConsulted(searchText) ng-href="http://maps.google.com/?q={{searchText}}, {{location}}, Argentina">intentá la búsqueda en el mapa</a></h2><img src=assets/img/logo.png class=logo ng-click=logoPressed()></div>
+<div id="noResultsScreen" class="textAndLogo">
+	<h2 class="noResultsHeader">No se encontraron productos que coincidan con "<span class="noResultsTerm" ng-bind="searchText"></span>", probá de nuevo con otras palabras o 
+	<a class="noResultsTerm link" ng-click="locationConsulted(searchText)" ng-href="http://maps.google.com/?q={{searchText}}, {{location}}, Argentina">intentá la búsqueda en el mapa</a></h2>
+	<img src="assets/img/logo.png" class="logo" ng-click="logoPressed()">
+</div>

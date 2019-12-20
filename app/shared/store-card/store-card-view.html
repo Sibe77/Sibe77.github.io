@@ -1,1 +1,62 @@
-<div class=clientCard><div ng-if=clientShown.openData.isOpen class=openClosedSign><span class=open-closed-text ng-if="clientShown.openData.openTime == clientShown.openData.closeTime" ng-class="clientShown.openData.openTime == undefined ? 'noOpenTime' : ''">Abierto las 24 Horas</span> <span class=open-closed-text ng-if="clientShown.openData.closeTime != undefined && clientShown.openData.openTime != clientShown.openData.closeTime">Abierto hasta las <span class=open-closed-text data-ng-bind=::clientShown.openData.closeTime></span> <span class=open-closed-text ng-if="clientShown.openData.closeHour < 12">(AM)</span> <span class=open-closed-text ng-if="clientShown.openData.closeHour >= 12 && clientShown.openData.closeHour < 13">(PM)</span></span></div><div ng-if=!clientShown.openData.isOpen class=openClosedSign><span class=open-closed-text ng-if="clientShown.openData.openTime == undefined" ng-class="clientShown.openData.openTime == undefined ? 'noOpenTime' : ''">Cerrado por el resto del día</span> <span class=open-closed-text ng-if="clientShown.openData.openTime != undefined">Cerrado hasta las <span class=open-closed-text data-ng-bind=::clientShown.openData.openTime></span> <span class=open-closed-text ng-if="clientShown.openData.openHour < 12">(AM)</span> <span class=open-closed-text ng-if="clientShown.openData.openHour >= 12 && clientShown.openData.openHour < 13">(PM)</span></span></div><div class=clientInfo><img class=clientImage ng-src={{clientShown.client.imagen}} alt={{clientShown.client.cliente}}><div class=contacto><p ng-if=!isMobile class=direccion ng-bind=::clientShown.client.direccion></p><a ng-if=isMobile class=geoLocation ng-click=locationConsulted(clientShown.client.cliente) ng-href="http://maps.google.com/?q={{clientShown.client.direccion}}, {{location}}, Argentina({{clientShown.client.cliente}})" "><img src=assets/img/location.png></a><p ng-if=!isMobile class=telefono data-ng-bind=::clientShown.client.telefono></p><a ng-if=isMobile ng-click=callPerformed(clientShown.client.cliente) ng-href=tel:{{clientShown.client.telefono}} target=_blank><img src=assets/img/callIcon.png></a></div><div class=delivery><p class=text ng-if="clientShown.client.preciodelivery =='Si'"></p><p class="text noDelivery" ng-if="clientShown.client.preciodelivery == 'No'"></p></div></div><p class=bottomStoreName ng-bind=clientShown.client.cliente></p><div class=matchedProducts><div ng-repeat="product in clientShown.matchedProducts" class=product><span ng-if=product.categoria[0].nombre class=category>{{::product.categoria[0].nombre}}</span><h5 class=productName>{{::product.producto}}</h5><div class=price ng-if=product.precio ng-bind=::product.precio></div><h5 class=descripcion>{{::product.descripcion}}</h5></div><p class=fullCardButton ng-if="currentSearch.trim() != localShown.cliente.trim()" ng-click="doSearch(clientShown.client.cliente); updateResultsData()">Ver comercio</p></div></div>
+<div class="clientCard">
+
+    <div ng-if="clientShown.openData.isOpen" class="openClosedSign">
+        <span class="open-closed-text" ng-if="clientShown.openData.openTime == clientShown.openData.closeTime" ng-class="clientShown.openData.openTime == undefined ? 'noOpenTime' : ''">Abierto las 24 Horas</span>
+        <span class="open-closed-text" ng-if="clientShown.openData.closeTime != undefined && clientShown.openData.openTime != clientShown.openData.closeTime">
+            Abierto hasta las 
+            <span class="open-closed-text" data-ng-bind="::clientShown.openData.closeTime"></span>
+            <span class="open-closed-text" ng-if="clientShown.openData.closeHour < 12">(AM)</span>
+            <span class="open-closed-text" ng-if="clientShown.openData.closeHour >= 12 && clientShown.openData.closeHour < 13">(PM)</span>
+        </span>
+    </div>
+    <div ng-if="!clientShown.openData.isOpen" class="openClosedSign">
+        <span class="open-closed-text" ng-if="clientShown.openData.openTime == undefined" ng-class="clientShown.openData.openTime == undefined ? 'noOpenTime' : ''">Cerrado por el resto del día</span>
+        <span class="open-closed-text" ng-if="clientShown.openData.openTime != undefined">
+            Cerrado hasta las 
+            <span class="open-closed-text" data-ng-bind="::clientShown.openData.openTime"></span>
+            <span class="open-closed-text" ng-if="clientShown.openData.openHour < 12">(AM)</span>
+            <span class="open-closed-text" ng-if="clientShown.openData.openHour >= 12 && clientShown.openData.openHour < 13">(PM)</span>
+        </span>
+    </div>
+
+    <div class="clientInfo">
+        <img class="clientImage" ng-src="{{clientShown.client.imagen}}" alt="{{clientShown.client.cliente}}" /> 
+        <!--
+        <img class="clientImage" ng-src="http://maps.google.com/maps/api/staticmap?center=rio%20tercero&zoom=14&size=512x512&maptype=roadmap&markers=color:blue|label:1|{{clientShown.client.direccion}}, {{location}},%20argentina&markers=color:green|label:G|40.711614,-74.012318&markers=color:red|color:red|label:C|40.718217,-73.998284&sensor=false"/>
+        -->
+        <div class="contacto">
+            <p ng-if="!isMobile" class="direccion" ng-bind="::clientShown.client.direccion"></p>
+            <a ng-if="isMobile" class="geoLocation" ng-if="clientShown.client.direccion" ng-click="locationConsulted(clientShown.client.cliente)" ng-href="http://maps.google.com/?q={{clientShown.client.direccion}}, {{location}}, Argentina({{clientShown.client.cliente}})"">
+                <img src="assets/img/location.png" />
+            </a>
+            <p ng-if="!isMobile" class="telefono" data-ng-bind="::clientShown.client.telefono"></p>
+            <a ng-if="isMobile" ng-click="callPerformed(clientShown.client.cliente)" ng-href="tel:{{clientShown.client.telefono}}" target="_blank">
+                <img src="assets/img/callIcon.png" />
+            </a>
+        </div>
+        <div class="delivery">
+            <p class="text" ng-if="clientShown.client.preciodelivery =='Si'"></p>
+            <p class="text noDelivery" ng-if="clientShown.client.preciodelivery == 'No'"></p>
+        </div>
+    </div>
+
+    <p class="bottomStoreName" ng-bind="clientShown.client.cliente"></p>
+
+    <div class="matchedProducts">
+        <!-- Fallback for stores with uncategorized products -->
+        <div ng-repeat="product in clientShown.matchedProducts" class="product">
+            <span ng-if="product.categoria[0].nombre" class="category">
+                {{::product.categoria[0].nombre}}
+            </span>
+            <h5 class="productName">
+                {{::product.producto}}
+            </h5>
+            <div class="price" ng-if="product.precio" ng-bind="::product.precio"></div>
+            <h5 class="descripcion">
+                {{::product.descripcion}}
+            </h5>
+        </div>
+
+        <p class="fullCardButton" ng-if="currentSearch.trim() != localShown.cliente.trim()" ng-click="doSearch(clientShown.client.cliente); updateResultsData()">Ver comercio</p>
+    </div>
+</div>

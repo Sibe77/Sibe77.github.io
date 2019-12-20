@@ -1,1 +1,8 @@
-angular.module("app").controller("selectionController",["$scope","$location","fieldbookService",function(o,e,n){o.region,n.getRegions(function(e){o.regions=e})}]);
+angular.module('app')
+.controller('selectionController',['$scope',"$location",'fieldbookService', function($scope,$location,fieldbookService) {
+	$scope.region;
+
+	fieldbookService.getRegions(function(data){
+		$scope.regions = data;
+	});
+}]);

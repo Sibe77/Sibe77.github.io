@@ -1,1 +1,53 @@
-angular.module("app").controller("resultsController",["$scope",function(n){n.localShown;var o=function(){var o=0,e=[];if(void 0!=n.clientsShown)return void 0!=n.clientsShown.open&&(o+=n.clientsShown.open.length,void 0!=n.clientsShown.open[0]&&e.push(n.clientsShown.open[0])),void 0!=n.clientsShown.openLater&&(o+=n.clientsShown.openLater.length,void 0!=n.clientsShown.openLater[0]&&e.push(n.clientsShown.openLater[0])),void 0!=n.clientsShown.closed&&(o+=n.clientsShown.closed.length,void 0!=n.clientsShown.closed[0]&&e.push(n.clientsShown.closed[0])),1==o&&e[0].client};n.updateResultsData=function(){n.localShown=o()},n.updateResultsData()}]);
+angular.module('app')
+.controller('resultsController',['$scope', function($scope) {
+	$scope.localShown;
+
+	var getLocalSolo = function() {
+
+		var cantidadDeLocales = 0;
+		var local = [];
+
+		if ($scope.clientsShown != undefined) {
+
+			if ($scope.clientsShown.open != undefined)
+			{
+				cantidadDeLocales += $scope.clientsShown.open.length;
+				if ($scope.clientsShown.open[0] != undefined) {
+					local.push($scope.clientsShown.open[0])
+				}
+			}
+			
+			if ($scope.clientsShown.openLater != undefined)
+			{
+				cantidadDeLocales += $scope.clientsShown.openLater.length;
+
+				if ($scope.clientsShown.openLater[0] != undefined) {
+					local.push($scope.clientsShown.openLater[0])
+				}
+			}
+			
+			if ($scope.clientsShown.closed != undefined)
+			{
+				cantidadDeLocales += $scope.clientsShown.closed.length;
+
+				if ($scope.clientsShown.closed[0] != undefined) {
+					local.push($scope.clientsShown.closed[0]);
+				}
+			}
+
+			if (cantidadDeLocales == 1) {
+				return local[0].client;
+			} else {
+				return false;
+			}
+
+		}
+	}
+
+	$scope.updateResultsData = function() {
+		$scope.localShown = getLocalSolo();
+	}
+
+	$scope.updateResultsData();
+
+}]);

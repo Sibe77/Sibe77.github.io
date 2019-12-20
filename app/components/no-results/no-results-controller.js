@@ -1,1 +1,4 @@
-angular.module("app").controller("noResultsController",["$scope",function(o){}]);
+angular.module('app')
+.controller('noResultsController',['$scope', function($scope) {
+	//
+}]);

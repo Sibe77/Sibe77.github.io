@@ -1,1 +1,21 @@
-<div ng-class="!loadComplete || clientsShown == null || noResults ? 'notShowingProducts' : ''"><div ng-if=!loadComplete id=loadingScreen class=textAndLogo><div class=spinner></div><h2 class=noResultsHeader>Cargando... (Si este proceso toma demasiado tiempo, compruebe su conexión a internet y reinicie la aplicación).</h2></div><div ng-if=loadComplete ng-cloak><div id=content><search-bar></search-bar><ui-view></ui-view></div><footer></footer></div></div>
+<div ng-class="!loadComplete || clientsShown == null || noResults ? 'notShowingProducts' : ''">
+	<!-- LOADING -->
+	<div ng-if="!loadComplete"  id="loadingScreen" class="textAndLogo">
+		<div class="spinner"></div>		
+		<h2 class="noResultsHeader"> Cargando... (Si este proceso toma demasiado tiempo, compruebe su conexión a internet y reinicie la aplicación). </h2>
+	</div>
+	<!-- end LOADING -->
+
+	<!-- POST-LOAD LAYOUT -->
+	<div ng-if="loadComplete" ng-cloak>
+		<div id="content">
+			<!-- GENERAL SEARCH BOX -->
+			<search-bar></search-bar>
+			<!-- SCREENS-->
+			<ui-view></ui-view>		
+		</div>
+		<!-- end SCREENS -->
+		<footer></footer> 
+	</div>
+	<!-- end POST-LOAD LAYOUT -->
+</div>

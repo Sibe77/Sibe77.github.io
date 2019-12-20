@@ -1,1 +1,207 @@
-angular.module("app").factory("searchBarService",["configurationService","closedSignService",function(e,n){var r=e.searchBarService,t={},a=function(e,n){if(n)var r=t.suggestionsRelated;else var r=t.productsRelated;var a=e.split(" "),c="";return _.each(a,function(e){_.each(r,function(n){var r=!1;_.each(n,function(t){e===t&&(r=!0,_.each(n,function(e){c+=" "+e}))})})}),c},c=function(e){var n=function(e){return"s"===e.slice(-1)&&(e=e.slice(0,-1)),e};e=o(e);var t=e.split(" "),a=r.articles,c=[];return _.each(t,function(e){_.indexOf(a,e)<0&&(e=n(e),c.push(e))}),c},o=function(e){var n=e.toLowerCase(),n=_.deburr(n);return n},i=function(e,n){n=n.replace(/(^[\s]+|[\s]+$)/g,""),e=e.replace(/(^[\s]+|[\s]+$)/g,"");var r;return e==n&&(r=!0),r},u=function(e,n,r){var t=!0,c=o(e.producto);if(e.categoria[0]){var i=" "+e.categoria[0].nombre;c+=i}return void 0!=a(c,r)&&(c+=" "+a(c,r)),_.each(n,function(e){var n=new RegExp("\\b"+e,"i");-1==c.search(n)&&(t=!1)}),t},s=function(e,n,r){var t=_.find(r.allClients,["id",n.cliente[0].id]),a=[];return _.each(r.allHours,function(n){n.cliente[0]&&n.cliente[0].cliente===e&&a.push(n)}),{client:t,matchedProducts:[],hours:a}},l=function(e){console.log(e);var n=_.groupBy(e,function(e){return!0===e.openData.isOpen?"open":void 0!=e.openData.openTime?"openLater":"closed"});return n.open=_.shuffle(n.open),n.openLater=_.sortBy(n.openLater,[function(e){return e.openData.openTime}]),n},d={};return d.noResults=function(e){var n=void 0!=e.open&&e.open.length>0,r=void 0!=e.openLater&&e.openLater.length>0,t=void 0!=e.closed&&e.closed.length>0;return!(n||r||t)},d.getMatches=function(e,r,a){t=e;var o=c(r),d=[],p=[];_.each(e.allProducts,function(t){var c=t.cliente[0].cliente,l=u(t,o,a);if(void 0!=c){var d=i(c,r);(l||d)&&(c in p||(p[c]=s(c,t,e),p[c].openData=n.getData(p[c])),p[c].matchedProducts.push(t))}});for(client in p)p[client].matchedProducts=_.sortBy(p[client].matchedProducts,[function(e){return void 0!=e.categoria[0]?e.categoria[0].nombre:e.producto}]),p[client].matchedProducts.find&&p[client].matchedProducts.find(function(e){if(void 0!=e.categoria[0]&&(primeraPalabra=e.categoria[0].nombre.split(" ")[0],terceraPalabra=e.categoria[0].nombre.split(" ")[2],!("Descuentos"!=primeraPalabra&&"descuentos"!=primeraPalabra||"Promociones"!=terceraPalabra&&"promociones"!=terceraPalabra))){var n=_.indexOf(p[client].matchedProducts,e),r=p[client].matchedProducts[n];p[client].matchedProducts.splice(n,1),p[client].matchedProducts.splice(0,0,r)}}),d.push(p[client]);return l(d)},d}]);
+angular.module('app')
+.factory("searchBarService",["configurationService","closedSignService",function(configurationService, closedSignService){
+	var configurations = configurationService.searchBarService;
+	var fbData = {};
+
+	var getRelatedProducts = function (product, callingFromSuggestions) {
+		if (callingFromSuggestions) {
+			var relatedProducts = fbData.suggestionsRelated;
+		} else {
+			var relatedProducts = fbData.productsRelated;
+		}
+		// Return array
+		var productWords = product.split(' ');
+		var related = '';
+		_.each(productWords, function (productWord) {
+			_.each(relatedProducts, function (relatedProductsGroup) {
+				var matchWordInGroup = false;
+				_.each(relatedProductsGroup, function (relatedWord) {
+					if (productWord === relatedWord) {
+						matchWordInGroup = true;
+						_.each(relatedProductsGroup, function (wordToInclude) {
+							related += (' '+wordToInclude);
+						});
+					}
+				});
+			});
+		});
+		return related;
+	};
+	var getWordsToSearch = function (searchedText) {
+		var pluralToSingular = function(word) {
+			if (word.slice(-1) === "s") {
+				word = word.slice(0,-1);
+			}
+			return word;
+		};
+
+		searchedText = accentsTidyAndLowercase(searchedText);
+		var searchedWords = searchedText.split(" ");
+		var commonWords = configurations.articles;
+
+		var outputWords = [];
+		_.each(searchedWords, function(searchedWord) {
+			if (_.indexOf(commonWords, searchedWord) < 0) {
+				searchedWord = pluralToSingular(searchedWord);
+				outputWords.push(searchedWord);
+			}
+		});
+		return outputWords;
+	};
+
+	var accentsTidyAndLowercase = function (text) {
+		var r = text.toLowerCase();
+		var r = _.deburr(r); // removing accents
+		return r;
+	};
+
+	var matchesClient = function (cliente, searchedWords) {
+		// Eliminamos los espacios en blanco que por alguna razon se agregan a searchedWords cuando hay alguna tilde en el texto
+		searchedWords = searchedWords.replace(/(^[\s]+|[\s]+$)/g, '');
+		cliente = cliente.replace(/(^[\s]+|[\s]+$)/g, '');
+
+		var match;
+
+		if(cliente == searchedWords){
+			match = true;
+		}
+
+		return (match);
+	}
+
+	var matchesProduct = function (product, searchedWords, callingFromSuggestions) {
+		var matchesAllProductWords = true;
+		var currentProduct = accentsTidyAndLowercase(product.producto);
+		if (product.categoria[0]) {
+			var category = ' ' + product.categoria[0].nombre;
+			currentProduct += category;
+		}
+		if (getRelatedProducts(currentProduct, callingFromSuggestions) != undefined) {
+			currentProduct += ' ' + getRelatedProducts(currentProduct, callingFromSuggestions);
+		}
+
+		_.each(searchedWords, function (searchedWord) {
+			var searchQuery = new RegExp("\\b"+searchedWord, "i");
+
+			if (currentProduct.search(searchQuery) == -1) {
+				matchesAllProductWords = false;
+			}
+		});
+
+		return matchesAllProductWords;
+	}
+
+	var mergeClientData = function (cliente, product, fieldBookData) {
+		var currentClient = _.find(fieldBookData.allClients, ['id', product.cliente[0].id]);
+		var hours = [];
+		// Agregamos las horas al correspondiente cliente
+		_.each(fieldBookData.allHours, function (currentHours) {
+			if (currentHours.cliente[0] && currentHours.cliente[0].cliente === cliente) {
+				hours.push(currentHours);
+			}
+		});
+
+		return {client: currentClient, matchedProducts: [], hours: hours};
+	};
+
+	var splitOpenClosedMatches = function (matches) {
+		console.log(matches);
+		var allMatchesSplitted = _.groupBy(matches,
+			function (local) {
+				if (local.openData.isOpen === true) {
+					return "open";
+				} else if (local.openData.openTime != undefined) {
+					return "openLater";
+				} else {
+					return "closed";
+				}
+			}
+		);
+
+		// Aleatory sorting for open stores
+		allMatchesSplitted.open = _.shuffle(allMatchesSplitted.open);
+
+		allMatchesSplitted.openLater = _.sortBy(allMatchesSplitted.openLater, [
+			function (local) {
+				return local.openData.openTime;
+			}
+		]);
+		return allMatchesSplitted;
+	}
+
+	var service = {};
+
+	service.noResults = function (clientsAfterSearch) {
+		var open = clientsAfterSearch.open != undefined && clientsAfterSearch.open.length > 0;
+		var openLater = clientsAfterSearch.openLater != undefined && clientsAfterSearch.openLater.length > 0;
+		var closed = clientsAfterSearch.closed != undefined && clientsAfterSearch.closed.length > 0;
+
+		if (open || openLater || closed) {
+			return false;
+		} else {
+			return true;
+		}
+	};
+
+	service.getMatches = function (fieldBookData, search, callingFromSuggestions) {
+		fbData = fieldBookData;
+		var searchedWords = getWordsToSearch(search);
+		var output = [];
+		var clientList = [];
+		_.each(fieldBookData.allProducts, function (product) {
+			var cliente = product.cliente[0].cliente;
+			var productMatch = matchesProduct(product, searchedWords, callingFromSuggestions);
+			if (cliente != undefined) {
+				var clientMatch = matchesClient(cliente, search);
+
+				if (productMatch || clientMatch) {
+					// Si el cliente no existe todavía en la lista que estamos creando
+					// Lo creamos y le asignamos sus productos (aquellos que matchean),
+					// y le asignamos sus correspondientes horarios de apertura y cierre.
+					if (!(cliente in clientList)) {
+						clientList[cliente] = mergeClientData(cliente, product, fieldBookData);
+						clientList[cliente].openData = closedSignService.getData(clientList[cliente]);
+					}
+					clientList[cliente].matchedProducts.push(product);
+				}
+			}
+		});
+
+		for (client in clientList) {
+			// We sort alphabetically the categories or names for each matched client
+			clientList[client].matchedProducts = _.sortBy(clientList[client].matchedProducts, [
+				function (product) {
+					if (product.categoria[0] != undefined) {
+						return product.categoria[0].nombre;
+					} else {
+						return product.producto;
+					}
+				}
+			]);
+
+			// Esto busca las palabras promo y producteka en la categoría y pone esos art. al principio de la lista
+			if (clientList[client].matchedProducts.find) {
+				clientList[client].matchedProducts.find(function(producto){
+					if (producto.categoria[0] != undefined) {
+						primeraPalabra = producto.categoria[0].nombre.split(' ')[0];
+						terceraPalabra = producto.categoria[0].nombre.split(' ')[2];
+
+						if ((primeraPalabra == 'Descuentos' || primeraPalabra == 'descuentos') && 
+							(terceraPalabra == 'Promociones' || terceraPalabra == 'promociones')) {
+							var promoIndex = _.indexOf(clientList[client].matchedProducts, producto);
+							var element = clientList[client].matchedProducts[promoIndex];
+						    clientList[client].matchedProducts.splice(promoIndex, 1);
+						    clientList[client].matchedProducts.splice(0, 0, element);
+						}
+					}
+				});
+			}
+
+			output.push(clientList[client]);
+		}
+		// We organize them in open/openLater/closed categories
+		return splitOpenClosedMatches(output);
+	};
+
+	return service;
+}]); 

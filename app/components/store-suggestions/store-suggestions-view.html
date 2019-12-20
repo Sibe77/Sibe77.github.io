@@ -1,1 +1,11 @@
-<div id=searchSuggestionsButtonsContainer><p></p><div ng-repeat="categoria in dataUtilities.clientes.categoriasConArticulos | filter: {articulos: searchText} | orderBy:['!articulos','nombre']"><h4 class=suggestionsHeader ng-bind=categoria.nombre></h4><div class="searchSuggestionsButton main" ng-repeat="cliente in categoria.articulos | filter: searchText | orderBy" ng-click=doSearch(cliente)><h4 class=searchSuggestionsText ng-bind=cliente></h4></div></div></div>
+<div id="searchSuggestionsButtonsContainer">
+	<p></p>
+
+	<div ng-repeat="categoria in dataUtilities.clientes.categoriasConArticulos | filter: {articulos: searchText} | orderBy:['!articulos','nombre']">
+		<h4 class="suggestionsHeader" ng-bind="categoria.nombre"></h4>
+
+		<div class="searchSuggestionsButton main" ng-repeat="cliente in categoria.articulos | filter: searchText | orderBy" ng-click="doSearch(cliente)">
+			<h4 class="searchSuggestionsText" ng-bind="cliente"></h4>
+		</div>
+	</div>
+</div>
